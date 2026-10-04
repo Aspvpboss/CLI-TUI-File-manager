@@ -5,5 +5,4 @@ fn main() {
     } else {
         fm_tui::run();
     }
-
 }
