@@ -1,0 +1,8 @@
+[package]
+name = "fm-tui"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+fm-core.workspace = true
+ratatui.workspace = true
