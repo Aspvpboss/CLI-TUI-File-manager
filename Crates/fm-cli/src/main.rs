@@ -58,8 +58,6 @@ fn process_args() -> ProcessedArgs {
 
 
 fn main() {
-    fm_tui::tui();
-    fm_cli::cli();
 
     let args = process_args();
     
