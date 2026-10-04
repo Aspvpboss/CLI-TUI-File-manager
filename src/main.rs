@@ -58,7 +58,8 @@ fn process_args() -> ProcessedArgs {
 
 
 fn main() {
-    println!("fm-cli running on fm-core v{}", fm_core::version());
+    fm_tui::tui();
+    fm_cli::cli();
 
     let args = process_args();
     
