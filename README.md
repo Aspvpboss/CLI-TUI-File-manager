@@ -1,4 +1,5 @@
 # CLI-file-explorer
 A CLI file explorer writen in rust
 
-This is a test.
+
+Test for linux bash
