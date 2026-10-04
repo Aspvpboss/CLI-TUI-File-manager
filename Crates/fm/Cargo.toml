@@ -1,0 +1,9 @@
+[package]
+name = "fm"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+fm-cli = { workspace = true }
+fm-tui = { workspace = true }
+clap = {workspace = true }
