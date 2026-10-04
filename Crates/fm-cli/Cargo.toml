@@ -4,5 +4,5 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-fm-core.workspace = true
-clap.workspace = true
+fm-core = { workspace = true }
+clap = { workspace = true }
