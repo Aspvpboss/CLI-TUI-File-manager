@@ -1,5 +1,5 @@
-use::clap::{Parser, ValueEnum};
-
+use clap::{Parser, ValueEnum};
+use std::fmt;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, ValueEnum, Ord, Debug)]
 pub enum ArgFlags {
@@ -22,4 +22,18 @@ pub struct Args{
     /// flags used in CLI commands
     #[arg(short,long, value_enum)]
     pub flags: Vec<ArgFlags>,
+}
+
+
+impl fmt::Display for Args {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // write!(f, "command: {} - arg1: {} - arg2: {}", )
+
+        let command = self.command.clone().unwrap_or("".to_string());
+        let arg_one = self.arg_one.clone().unwrap_or("".to_string());
+        let arg_two = self.arg_two.clone().unwrap_or("".to_string());
+
+
+        write!(f, "command: {}, arg_one: {}, arg_two {}", command, arg_one, arg_two)
+    }
 }

@@ -14,6 +14,6 @@ fn main() {
     if run_tui == true {
         fm_tui::run();
     } else {
-        fm_cli::run();
+        fm_cli::run(args);
     }
 }
