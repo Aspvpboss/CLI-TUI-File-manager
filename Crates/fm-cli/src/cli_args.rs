@@ -34,6 +34,6 @@ impl fmt::Display for Args {
         let arg_two = self.arg_two.clone().unwrap_or("".to_string());
 
 
-        write!(f, "command: {}, arg_one: {}, arg_two {}", command, arg_one, arg_two)
+        write!(f, "command: {}, arg_one: {}, arg_two {}, flags {:?}", command, arg_one, arg_two, self.flags)
     }
 }
