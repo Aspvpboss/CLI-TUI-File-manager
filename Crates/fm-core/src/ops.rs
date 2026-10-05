@@ -2,7 +2,7 @@
 use crate::error::{FmError, Result};
 use std::ffi::OsStr;
 use std::fs::{self, OpenOptions};
-use std::{io, result};
+use std::io;
 use std::path::{Path, PathBuf};
 
 pub enum Recursion {
