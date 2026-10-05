@@ -31,3 +31,7 @@ pub fn del(path: &str) -> io::Result<()> {
 pub fn delf(path: &str) -> io::Result<()> {
     fs::remove_dir_all(path)
 }
+
+pub fn rename(path: &str, name: &str) -> io::Result<()> {
+    fs::rename(path, name)
+}
