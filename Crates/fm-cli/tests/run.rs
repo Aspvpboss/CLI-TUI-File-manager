@@ -138,11 +138,12 @@ fn renaming_file(){
     let args = Args{
         command: Some("rename".to_string()),
         arg_one: Some(p.to_string()),
-        arg_two: Some(format!("{p}2")),
+        arg_two: Some("burger.txt".to_string()),
         flags: vec![],
     };
 
     let result = fm_cli::run(args);
+    println!("{:?}", result);
     assert!(result.is_ok()); 
 }
 
@@ -160,7 +161,7 @@ fn renaming_dir(){
     let args = Args{
         command: Some("rename".to_string()),
         arg_one: Some(p.to_string()),
-        arg_two: Some(format!("{p}2")),
+        arg_two: Some("b".to_string()),
         flags: vec![],
     };
 
