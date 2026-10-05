@@ -10,7 +10,7 @@ pub fn run(args : Args) -> Result<()>{
     let command = args.command.unwrap_or("".to_string());
     let arg_one = args.arg_one.unwrap_or("".to_string());
     let arg_two = args.arg_two.unwrap_or("".to_string());
-
+    let flags = args.flags;
 
     // we can add some way to change the hardcoded strings in this later 
     let processed_command = match command.as_str() {
@@ -32,16 +32,19 @@ pub fn run(args : Args) -> Result<()>{
             fm_core::create_dir(arg_one)?;
         }
         Some(CommandExecuteConfigs::DEL) => {
-            // Handle del
+            fm_core::remove_file(arg_one)?;
         }
         Some(CommandExecuteConfigs::DELF) => {
-            // Handle delf
+            // handle removing directory
         }
         Some(CommandExecuteConfigs::RENAME) => {
-            // Handle rename
+            fm_core::rename(arg_one, arg_two)?;
         }
         Some(CommandExecuteConfigs::LIST) => {
-            // Handle list
+            let dir_list = fm_core::list_dir(arg_one)?;
+            for entry in dir_list{
+                println!("{}", entry);
+            }
         }
         None => {
             return Err(FmError::Cli("invalid command arg given".to_string()));

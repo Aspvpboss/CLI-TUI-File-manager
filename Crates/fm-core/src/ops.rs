@@ -4,16 +4,27 @@ use std::ffi::OsStr;
 use std::fs::{self, OpenOptions};
 use std::io;
 use std::path::{Path, PathBuf};
+use std::fmt;
 
 pub enum Recursion {
     Yes,
     No,
 }
 
+#[derive(Debug)]
 pub struct Entry {
     pub name: String,
-    pub is_dir: bool,
     pub size: u64,
+    pub is_dir: bool,
+}
+impl fmt::Display for Entry {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut name = self.name.clone();
+        if self.is_dir == true {
+            name += "/";
+        }
+        write!(f, "{} - {} bytes", name, self.size)
+    }
 }
 
 
