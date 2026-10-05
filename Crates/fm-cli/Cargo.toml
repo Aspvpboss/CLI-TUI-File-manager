@@ -6,3 +6,4 @@ edition.workspace = true
 [dependencies]
 fm-core = { workspace = true }
 clap = { workspace = true }
+tempfile = { workspace = true }
