@@ -1,8 +1,8 @@
-use fm_core::FmError;
+use fm_core::*;
 
 
-pub fn run() -> Option<FmError> {
+pub fn run() -> Result<()> {
     println!("fm-tui running on fm-core v{}", fm_core::version());
 
-    None
+    return Ok(());
 }

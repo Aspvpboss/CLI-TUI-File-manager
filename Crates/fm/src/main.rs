@@ -12,14 +12,14 @@ fn main() -> ExitCode {
         args.arg_two.is_none(); 
 
     if run_tui == true {
-        if let Some(error) = fm_tui::run(){
+        if let Err(error) = fm_tui::run(){
             println!("{}", error);
             return ExitCode::FAILURE;            
         }
 
         return ExitCode::FAILURE;            
     } else {
-        if let Some(error) = fm_cli::run(args){
+        if let Err(error) = fm_cli::run(args){
             println!("{}", error);
             return ExitCode::FAILURE;
         }
