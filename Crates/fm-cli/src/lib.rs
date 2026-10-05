@@ -1,6 +1,7 @@
 pub mod cli_args;
 pub mod cli_config;
 use cli_args::Args;
+use cli_args::ArgFlags;
 use cli_config::CommandExecuteConfigs;
 use fm_core::*;
 
@@ -35,7 +36,12 @@ pub fn run(args : Args) -> Result<()>{
             fm_core::remove_file(arg_one)?;
         }
         Some(CommandExecuteConfigs::DELF) => {
-            // handle removing directory
+            let mut recursion = Recursion::No;
+            if flags.contains(&ArgFlags::USE_RECURSION){
+                recursion = Recursion::Yes;
+            }
+
+            fm_core::remove_dir(arg_one, recursion)?;
         }
         Some(CommandExecuteConfigs::RENAME) => {
             fm_core::rename(arg_one, arg_two)?;
