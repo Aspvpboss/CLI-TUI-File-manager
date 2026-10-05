@@ -3,7 +3,7 @@ mod common;
 use fm_core::{new, newf, rename};
 use std::fs;
 
-// Note: `rename` currently treats its second argument as a full destination path
+// `rename` treats its second argument as a full destination path
 // (it is passed straight to fs::rename), not just a new file name.
 
 #[test]
