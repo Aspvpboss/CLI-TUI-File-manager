@@ -12,7 +12,10 @@ fn main() -> ExitCode {
         args.arg_two.is_none(); 
 
     if run_tui == true {
-        fm_tui::run();
+        if let Some(error) = fm_tui::run(){
+            println!("{}", error);
+            return ExitCode::FAILURE;            
+        }
 
         return ExitCode::FAILURE;            
     } else {

@@ -15,7 +15,7 @@ impl fmt::Display for FmError {
             FmError::Io(e)  => write!(f, "I/O error: {e}"),
             FmError::AlreadyExists(p) => write!(f, "alredy exists: {}", p.display()),
             FmError::InvalidName(n) => write!(f, "invalid name: {n:?}"),
-            FmError::Cli(n) => write!(f, "failed to execute CLI args: {n:?}"),
+            FmError::Cli(n) => write!(f, "CLI error: {n}"),
         }
     }
 }
