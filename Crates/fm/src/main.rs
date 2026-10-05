@@ -14,6 +14,8 @@ fn main() {
     if run_tui == true {
         fm_tui::run();
     } else {
-        fm_cli::run(args);
+        if let Some(error) = fm_cli::run(args){
+            println!("{}", error);
+        }
     }
 }

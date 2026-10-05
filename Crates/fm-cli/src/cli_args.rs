@@ -3,7 +3,7 @@ use std::fmt;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, ValueEnum, Ord, Debug)]
 pub enum ArgFlags {
-    BURGER,
+    USE_RECURSION,
 }
 
 
