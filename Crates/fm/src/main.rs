@@ -1,5 +1,5 @@
 use clap::Parser;
-use fm_cli::Args;
+use::fm_cli::cli_args::Args;
 
 
 fn main() {
