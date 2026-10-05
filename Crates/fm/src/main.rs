@@ -1,8 +1,8 @@
 use clap::Parser;
 use::fm_cli::cli_args::Args;
+use std::process::ExitCode;
 
-
-fn main() {
+fn main() -> ExitCode {
 
     let args = Args::parse();
     // don't panic
@@ -13,9 +13,13 @@ fn main() {
 
     if run_tui == true {
         fm_tui::run();
+
+        return ExitCode::FAILURE;            
     } else {
         if let Some(error) = fm_cli::run(args){
             println!("{}", error);
+            return ExitCode::FAILURE;
         }
     }
+    return ExitCode::SUCCESS
 }
