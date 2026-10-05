@@ -2,7 +2,7 @@ pub mod cli_args;
 pub mod cli_config;
 use cli_args::Args;
 use cli_config::CommandExecuteConfigs;
-use fm_core::FmError;
+use fm_core::*;
 
 pub fn run(args : Args) -> Option<FmError>{
 
@@ -26,10 +26,14 @@ pub fn run(args : Args) -> Option<FmError>{
     // Now handle execution based on the config/enum
     match processed_command {
         Some(CommandExecuteConfigs::NEW) => {
-            // Handle new
+            if let Err(error) = fm_core::create_file(arg_one){
+                return Some(error);
+            }
         }
         Some(CommandExecuteConfigs::NEWF) => {
-            // Handle newf
+            if let Err(error) = fm_core::create_dir(arg_one){
+                return Some(error);
+            }
         }
         Some(CommandExecuteConfigs::DEL) => {
             // Handle del
