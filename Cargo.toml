@@ -1,10 +1,10 @@
 [workspace]
 resolver = "3"
 members = [
-    "Crates/fm-core",
-    "Crates/fm-cli",
-    "Crates/fm-tui",
-    "Crates/fm",
+    "crates/fm-core",
+    "crates/fm-cli",
+    "crates/fm-tui",
+    "crates/fm",
 ]
 
 [workspace.package]
@@ -15,6 +15,6 @@ edition = "2024"
 clap = { version = "4.6.7", features = ["derive"] }
 ratatui = "0.30.2"
 tempfile = "3.27.0"
-fm-core = { path = "Crates/fm-core" }
-fm-cli = { path = "Crates/fm-cli" }
-fm-tui = { path = "Crates/fm-tui" }
+fm-core = { path = "crates/fm-core" }
+fm-cli = { path = "crates/fm-cli" }
+fm-tui = { path = "crates/fm-tui" }
