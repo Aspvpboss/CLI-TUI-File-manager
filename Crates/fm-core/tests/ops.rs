@@ -1,4 +1,6 @@
 
+// Claude is responsible for most tests in this file past the creat_file tests
+
 use fm_core::*;
 use std::fs;
 use std::io::ErrorKind;
