@@ -6,3 +6,6 @@ edition.workspace = true
 [dependencies]
 fm-core = { workspace = true }
 ratatui = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
