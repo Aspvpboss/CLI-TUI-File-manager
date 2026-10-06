@@ -7,6 +7,7 @@ pub enum FmError {
     Io(io::Error),
     AlreadyExists(PathBuf),
     InvalidName(String),
+    Clipboard(String),
 }
 
 impl fmt::Display for FmError {
@@ -16,6 +17,7 @@ impl fmt::Display for FmError {
             FmError::AlreadyExists(p) => write!(f, "alredy exists: {}", p.display()),
             FmError::InvalidName(n) => write!(f, "invalid name: {n:?}"),
             FmError::Cli(n) => write!(f, "CLI error: {n}"),
+            FmError::Clipboard(n) => write!(f, "Clipboard error: {n}"),
         }
     }
 }

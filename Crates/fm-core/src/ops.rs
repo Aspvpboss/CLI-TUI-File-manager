@@ -1,4 +1,4 @@
-
+use clipboard_rs::{Clipboard, ClipboardContext};
 use crate::error::{FmError, Result};
 use std::ffi::OsStr;
 use std::fs::{self, OpenOptions};
@@ -100,4 +100,21 @@ pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
     });
 
     Ok(entries)
+}
+
+
+pub fn copy_file(path: impl AsRef<Path>) -> Result<()> {
+
+    let Ok(ctx) = ClipboardContext::new() else {
+        return Err(FmError::Clipboard(String::from("Failed to create Clipboard Context")));
+    };
+
+    // do NOT question this
+    let path_string = path.as_ref().to_str().unwrap_or("").to_string();
+
+    if let Err(_) = ctx.set_files(vec![path_string]){
+        return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
+    }
+
+    Ok(())
 }
