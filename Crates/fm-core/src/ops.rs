@@ -103,14 +103,14 @@ pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
 }
 
 
-pub fn copy_file(path: impl AsRef<Path>) -> Result<()> {
+pub fn copy_file(absolute_path: impl AsRef<Path>) -> Result<()> {
 
     let Ok(ctx) = ClipboardContext::new() else {
         return Err(FmError::Clipboard(String::from("Failed to create Clipboard Context")));
     };
 
     // do NOT question this
-    let path_string = path.as_ref().to_str().unwrap_or("").to_string();
+    let path_string = absolute_path.as_ref().to_str().unwrap_or("").to_string();
 
     if let Err(_) = ctx.set_files(vec![path_string]){
         return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
