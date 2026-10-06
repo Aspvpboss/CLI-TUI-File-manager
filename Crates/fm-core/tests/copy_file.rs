@@ -1,23 +1,29 @@
 // I hand made these terrible tests :)
 
+use clipboard_rs::{ClipboardContext, Clipboard};
 use fm_core::*;
 use std::fs;
 use tempfile::tempdir;
 
 #[test]
 fn test_copy_file() {
-    // let dir = tempdir().unwrap();
-    // let p = dir.path().join("a.txt");
+    let dir = tempdir().unwrap();
+    let p = dir.path().join("burger.txt");
+    let dir = dir.path().join("a");
+    create_dir(&dir).unwrap();
 
-    let p = "home/aspvpboss17306/Documents/programs/Workbench/CLI-file-explorer/Crates/fm-core/burger.txt";
-    if let Ok(var) = fs::exists("burger.txt"){
-        if var == false {
-            create_file("burger.txt").unwrap();
-        }
-    }
+    create_file(&p).unwrap();
+    fs::write(&p, "Burger").unwrap();
+    copy_file(&p).unwrap();
 
-    // create_file(&p).unwrap();
+    let ctx = ClipboardContext::new().unwrap();
+    let files = ctx.get_files().unwrap();
 
-    assert!(copy_file(p).is_ok());
+    println!("{files:?}");
+
+    fs::copy(p, dir.join("burger.txt")).unwrap();
+
+    // assert!(copy_file(p).is_ok());
 
 }
+
