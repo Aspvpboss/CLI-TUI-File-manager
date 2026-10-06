@@ -473,6 +473,7 @@ dependencies = [
  "clap",
  "fm-cli",
  "fm-tui",
+ "tempfile",
 ]
 
 [[package]]
