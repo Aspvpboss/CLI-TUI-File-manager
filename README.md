@@ -1,5 +1,5 @@
-# CLI-file-explorer
-A CLI file explorer writen in rust
+# CLI-TUI file manager
+A CLI/TUI file manager written in rust
 
 
 Test for linux bash
