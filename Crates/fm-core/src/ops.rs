@@ -131,6 +131,13 @@ pub fn copy_files(paths : Vec<impl AsRef<Path>>) -> Result<()> {
     };
 
 
+    if path_strings.is_empty() {
+        if safe_clipboard.clear().is_err() {
+            return Err(FmError::Clipboard(String::from("Failed to clear clipboard")));
+        }
+        return Ok(());
+    }
+
     if let Err(_) = safe_clipboard.set_files(path_strings){
         return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
     }
@@ -144,9 +151,8 @@ pub fn paste_files(delete_reference : PasteDeleteRef) -> Result<()> {
         return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
     };
 
-    let Ok(clipboard_files) = safe_clipboard.get_files() else {
-        return Err(FmError::Clipboard(String::from("Failed to get clipboard reference")));
-    }; 
+    // An empty clipboard makes get_files() error on Windows; treat it as "nothing to paste"
+    let clipboard_files = safe_clipboard.get_files().unwrap_or_default();
 
     for file in &clipboard_files {
         create_file(file)?;
