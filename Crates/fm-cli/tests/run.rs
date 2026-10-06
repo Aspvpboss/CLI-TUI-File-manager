@@ -65,7 +65,7 @@ fn deleting_dir(){
     fm_core::create_dir(p).unwrap();
 
     let args = Args{
-        command: Commands::delf { dir_path: p.to_string() },
+        command: Commands::delf { dir_path: p.to_string(), recursion: false },
         flags: vec![],
     };
 
@@ -85,8 +85,8 @@ fn deleting_dir_with_recursion(){
     fm_core::create_file(&format!("{p}/file.txt")).unwrap();
 
     let args = Args{
-        command: Commands::delf { dir_path: p.to_string() },
-        flags: vec![ArgFlags::USE_RECURSION],
+        command: Commands::delf { dir_path: p.to_string(), recursion: true },
+        flags: vec![],
     };
 
     let result = fm_cli::run(args);
