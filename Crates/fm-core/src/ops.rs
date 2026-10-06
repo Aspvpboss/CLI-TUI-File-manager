@@ -5,6 +5,11 @@ use std::fs::{self, OpenOptions};
 use std::io;
 use std::path::{Path, PathBuf};
 use std::fmt;
+use std::sync::{LazyLock, Mutex};
+
+// black magic, thread safe though
+static CLIPBOARD: LazyLock<Option<Mutex<ClipboardContext>>> =
+    LazyLock::new(|| ClipboardContext::new().ok().map(Mutex::new));
 
 pub enum Recursion {
     Yes,
@@ -105,14 +110,16 @@ pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
 
 pub fn copy_file(absolute_path: impl AsRef<Path>) -> Result<()> {
 
-    let Ok(ctx) = ClipboardContext::new() else {
-        return Err(FmError::Clipboard(String::from("Failed to create Clipboard Context")));
-    };
-
-    // do NOT question this
+    // do not question this
     let path_string = absolute_path.as_ref().to_str().unwrap_or("").to_string();
 
-    if let Err(_) = ctx.set_files(vec![path_string]){
+    
+    // do NOT question this
+    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("burger")))?.lock() else {
+        return Err(FmError::Clipboard(String::from("burger")));
+    };
+
+    if let Err(_) = safe_clipboard.set_files(vec![path_string]){
         return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
     }
 
