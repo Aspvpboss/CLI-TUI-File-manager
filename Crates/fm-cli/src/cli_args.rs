@@ -1,9 +1,10 @@
 use clap::{Parser, Subcommand, ValueEnum};
 use std::fmt;
 
+// unused for now, but will be used in the future for flags when needed
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, ValueEnum, Ord, Debug)]
 pub enum ArgFlags {
-    USE_RECURSION,
+    BURGER,
 }
 
 
@@ -13,14 +14,14 @@ pub enum ArgFlags {
 pub struct Args{
 
     #[command(subcommand)]
-    command: Commands,
+    pub command: Commands,
 
     /// flags used in CLI commands
     #[arg(short,long, value_enum)]
     pub flags: Vec<ArgFlags>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Creates a new file
     new {
@@ -37,6 +38,8 @@ pub enum Commands {
     /// Deletes a directory, if the directory is not empty then it will fail unless the USE_RECURSION flag is used
     delf {
         dir_path: String,
+        #[arg(short,long)]
+        recursion: bool,
     },
     /// Rename a file or directory, new name does not include path, just the new name
     rename {
@@ -54,13 +57,7 @@ pub enum Commands {
 
 impl fmt::Display for Args {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // write!(f, "command: {} - arg1: {} - arg2: {}", )
 
-        let command = self.command.clone().unwrap_or("".to_string());
-        let arg_one = self.arg_one.clone().unwrap_or("".to_string());
-        let arg_two = self.arg_two.clone().unwrap_or("".to_string());
-
-
-        write!(f, "command: {}, arg_one: {}, arg_two {}, flags {:?}", command, arg_one, arg_two, self.flags)
+        write!(f, "command: {:?}, flags: {:?}", self.command, self.flags)
     }
 }

@@ -1,59 +1,40 @@
 pub mod cli_args;
-pub mod cli_config;
-use cli_args::Args;
-use cli_args::ArgFlags;
-use cli_config::CommandExecuteConfigs;
+use cli_args::{Args, ArgFlags, Commands};
 use fm_core::*;
 
-pub fn run(args : Args) -> Result<()>{
-
-
-    let command = args.command.unwrap_or("".to_string());
-    let arg_one = args.arg_one.unwrap_or("".to_string());
-    let arg_two = args.arg_two.unwrap_or("".to_string());
-    let flags = args.flags;
-
-    // we can add some way to change the hardcoded strings in this later 
-    let processed_command = match command.as_str() {
-        "new" => Some(CommandExecuteConfigs::NEW),
-        "newf" => Some(CommandExecuteConfigs::NEWF), // Assuming these variants exist
-        "del" => Some(CommandExecuteConfigs::DEL),
-        "delf" => Some(CommandExecuteConfigs::DELF),
-        "rename" => Some(CommandExecuteConfigs::RENAME),
-        "list" => Some(CommandExecuteConfigs::LIST),
-        _ => None,
-    };
-
-    // Now handle execution based on the config/enum
-    match processed_command {
-        Some(CommandExecuteConfigs::NEW) => {
-            fm_core::create_file(arg_one)?;
+pub fn run(args: Args) -> Result<()> {
+    // Match directly on the clap Subcommand enum
+    match args.command {
+        Commands::new { file_path } => {
+            fm_core::create_file(file_path)?;
         }
-        Some(CommandExecuteConfigs::NEWF) => {
-            fm_core::create_dir(arg_one)?;
+        Commands::newf { dir_path } => {
+            fm_core::create_dir(dir_path)?;
         }
-        Some(CommandExecuteConfigs::DEL) => {
-            fm_core::remove_file(arg_one)?;
+        Commands::del { file_path } => {
+            fm_core::remove_file(file_path)?;
         }
-        Some(CommandExecuteConfigs::DELF) => {
-            let mut recursion = Recursion::No;
-            if flags.contains(&ArgFlags::USE_RECURSION){
-                recursion = Recursion::Yes;
-            }
+        Commands::delf { dir_path, recursion } => {
+            let recursion = if recursion {
+                Recursion::Yes
+            } else {
+                Recursion::No
+            };
 
-            fm_core::remove_dir(arg_one, recursion)?;
+            fm_core::remove_dir(dir_path, recursion)?;
         }
-        Some(CommandExecuteConfigs::RENAME) => {
-            fm_core::rename(arg_one, arg_two)?;
+        Commands::rename { file_path, new_file_name } => {
+            fm_core::rename(file_path, new_file_name)?;
         }
-        Some(CommandExecuteConfigs::LIST) => {
-            let dir_list = fm_core::list_dir(arg_one)?;
-            for entry in dir_list{
+        Commands::list { dir_path } => {
+            let dir_list = fm_core::list_dir(dir_path)?;
+            for entry in dir_list {
                 println!("{}", entry);
             }
         }
-        None => {
-            return Err(FmError::Cli("invalid command arg given".to_string()));
+        Commands::tui => {
+            // Placeholder for TUI execution
+            println!("TUI interface launching...");
         }
     }
 
