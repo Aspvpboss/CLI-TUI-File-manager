@@ -126,8 +126,8 @@ pub fn copy_files(paths : Vec<impl AsRef<Path>>) -> Result<()> {
 
     
     // do NOT question this
-    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("burger")))?.lock() else {
-        return Err(FmError::Clipboard(String::from("burger")));
+    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("Failed to get clipboard ref")))?.lock() else {
+        return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
     };
 
 
@@ -140,8 +140,8 @@ pub fn copy_files(paths : Vec<impl AsRef<Path>>) -> Result<()> {
 
 pub fn paste_files(delete_reference : PasteDeleteRef) -> Result<()> {
 
-    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("burger")))?.lock() else {
-        return Err(FmError::Clipboard(String::from("burger")));
+    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("Failed to get clipboard ref")))?.lock() else {
+        return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
     };
 
     let Ok(clipboard_files) = safe_clipboard.get_files() else {
