@@ -7,7 +7,7 @@ fn main() -> ExitCode {
     let args = Args::parse();
 
     match args.command {
-        Commands::tui => {
+        Commands::Tui => {
             if let Err(error) = fm_tui::run(){
                 println!("{}", error);
                 return ExitCode::FAILURE;            

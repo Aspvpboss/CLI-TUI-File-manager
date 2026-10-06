@@ -1,5 +1,4 @@
-use fm_cli::{cli_args::Args, cli_args::ArgFlags, cli_args::Commands};
-use fm_core::*;
+use fm_cli::cli_args::{Args, Commands};
 use tempfile::tempdir;
 
 #[test]
@@ -13,7 +12,7 @@ fn creating_file(){
     println!("{p}");
 
     let args = Args{
-        command: Commands::new { file_path: p.to_string() },
+        command: Commands::New { file_path: p.to_string() },
         flags: vec![],
     };
     let result = fm_cli::run(args);
@@ -29,7 +28,7 @@ fn creating_dir(){
     };
 
     let args = Args{
-        command: Commands::newf { dir_path: p.to_string() },
+        command: Commands::Newf { dir_path: p.to_string() },
         flags: vec![],
     };
     let result = fm_cli::run(args);
@@ -47,7 +46,7 @@ fn deleting_file(){
     fm_core::create_file(p).unwrap();
 
     let args = Args{
-        command: Commands::del { file_path: p.to_string() },
+        command: Commands::Del { file_path: p.to_string() },
         flags: vec![],
     };
     let result = fm_cli::run(args);
@@ -65,7 +64,7 @@ fn deleting_dir(){
     fm_core::create_dir(p).unwrap();
 
     let args = Args{
-        command: Commands::delf { dir_path: p.to_string(), recursion: false },
+        command: Commands::Delf { dir_path: p.to_string(), recursion: false },
         flags: vec![],
     };
 
@@ -85,7 +84,7 @@ fn deleting_dir_with_recursion(){
     fm_core::create_file(&format!("{p}/file.txt")).unwrap();
 
     let args = Args{
-        command: Commands::delf { dir_path: p.to_string(), recursion: true },
+        command: Commands::Delf { dir_path: p.to_string(), recursion: true },
         flags: vec![],
     };
 
@@ -104,7 +103,7 @@ fn renaming_file(){
     fm_core::create_file(p).unwrap();
 
     let args = Args{
-        command: Commands::rename {
+        command: Commands::Rename {
             file_path: p.to_string(),
             new_file_name: "burger.txt".to_string()
         },
@@ -127,7 +126,7 @@ fn renaming_dir(){
     fm_core::create_dir(p).unwrap();
 
     let args = Args{
-        command: Commands::rename {
+        command: Commands::Rename {
             file_path: p.to_string(),
             new_file_name: "b".to_string()
         },

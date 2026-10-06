@@ -24,33 +24,33 @@ pub struct Args{
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Creates a new file
-    new {
+    New {
         file_path: String,
     },
     /// Creates a new directory
-    newf {
+    Newf {
         dir_path: String,
     },
     /// Deletes a file
-    del {
+    Del {
         file_path: String,
     },
-    /// Deletes a directory, if the directory is not empty then it will fail unless the USE_RECURSION flag is used
-    delf {
+    /// Deletes a directory, if the directory is not empty then it will fail unless the -r/--recursion flag is used
+    Delf {
         dir_path: String,
         #[arg(short,long)]
         recursion: bool,
     },
     /// Rename a file or directory, new name does not include path, just the new name
-    rename {
+    Rename {
         file_path: String,
         new_file_name: String,
     },
     /// Lists the contents of the provided directory 
-    list {
+    List {
         dir_path: String,
     },
-    tui,
+    Tui,
 }
 
 
