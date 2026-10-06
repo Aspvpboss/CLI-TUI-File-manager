@@ -16,6 +16,12 @@ pub enum Recursion {
     No,
 }
 
+pub enum PasteDeleteRef {
+    Yes,
+    No,
+}
+
+
 #[derive(Debug)]
 pub struct Entry {
     pub name: String,
@@ -108,10 +114,15 @@ pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
 }
 
 
-pub fn copy_file(absolute_path: impl AsRef<Path>) -> Result<()> {
+pub fn copy_files(paths : Vec<impl AsRef<Path>>) -> Result<()> {
+
+    let mut path_strings: Vec<String> = Vec::new();
 
     // do not question this
-    let path_string = absolute_path.as_ref().to_str().unwrap_or("").to_string();
+    for path in paths {
+        let path_string = path.as_ref().to_str().unwrap_or("").to_string();
+        path_strings.push(path_string);
+    }
 
     
     // do NOT question this
@@ -119,9 +130,38 @@ pub fn copy_file(absolute_path: impl AsRef<Path>) -> Result<()> {
         return Err(FmError::Clipboard(String::from("burger")));
     };
 
-    if let Err(_) = safe_clipboard.set_files(vec![path_string]){
+
+    if let Err(_) = safe_clipboard.set_files(path_strings){
         return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
     }
 
     Ok(())
 }
+
+pub fn paste_files(delete_reference : PasteDeleteRef) -> Result<()> {
+
+    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("burger")))?.lock() else {
+        return Err(FmError::Clipboard(String::from("burger")));
+    };
+
+    let Ok(clipboard_files) = safe_clipboard.get_files() else {
+        return Err(FmError::Clipboard(String::from("Failed to get clipboard reference")));
+    }; 
+
+    for file in &clipboard_files {
+        create_file(file)?;
+    }
+
+    match delete_reference {
+        PasteDeleteRef::Yes => {
+            for file in &clipboard_files {
+                remove_file(file)?;
+            }
+        },
+        PasteDeleteRef::No => {},
+    } 
+
+    Ok(())
+}
+
+
