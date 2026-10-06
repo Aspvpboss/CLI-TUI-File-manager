@@ -15,7 +15,7 @@ fn main() -> ExitCode {
         }
         _ => {
             if let Err(error) = fm_cli::run(args){
-                println!("{}", error);
+                eprintln!("{}", error);
                 return ExitCode::FAILURE;
             }
         }
