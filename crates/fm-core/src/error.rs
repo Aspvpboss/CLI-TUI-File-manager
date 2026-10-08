@@ -8,6 +8,7 @@ pub enum FmError {
     AlreadyExists(PathBuf),
     InvalidName(String),
     Clipboard(String),
+    PasteIntoSelf(PathBuf),
 }
 
 impl fmt::Display for FmError {
@@ -17,7 +18,8 @@ impl fmt::Display for FmError {
             FmError::AlreadyExists(p) => write!(f, "alredy exists: {}", p.display()),
             FmError::InvalidName(n) => write!(f, "invalid name: {n:?}"),
             FmError::Cli(n) => write!(f, "CLI error: {n}"),
-            FmError::Clipboard(n) => write!(f, "Clipboard error: {n}"),
+            FmError::Clipboard(n) => write!(f, "clipboard error: {n}"),
+            FmError::PasteIntoSelf(p) => write!(f, "cannot paste a folder into itself: {}", p.display()),
         }
     }
 }

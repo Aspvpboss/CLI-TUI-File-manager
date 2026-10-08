@@ -13,7 +13,7 @@ use std::sync::{LazyLock, Mutex};
 static CLIPBOARD: LazyLock<Option<Mutex<ClipboardContext>>> =
     LazyLock::new(|| ClipboardContext::new().ok().map(Mutex::new));
 // BIG IMPORTANT ! ! ! This is were copied paths go whe the system clipboard can't take them/does not exists.
-static FALLBACK: Mutex<Vec<PathBuf>> = Mutex::new(Vec::new());
+static FALLBACK: Mutex<Option<Vec<PathBuf>>> = Mutex::new(None);
 // Remember if the clipboard can't be used
 static CLIPBOARD_DISABLED: AtomicBool = AtomicBool::new(false);
 
@@ -125,9 +125,9 @@ pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
     };
     
     if copy_to_system(&absolute_paths) {
-        fallback.clear();
+        fallback.None();
     } else {
-        *fallback = absolute_paths;
+        *fallback = Some(absolute_paths);
     }
 
     Ok(())
@@ -165,4 +165,75 @@ fn copy_to_system(paths: &[PathBuf]) -> bool {
     }
 
     ok
+}
+
+pub fn paste_files(dest_dir: impl AsRef<Path>) -> Result<Vec<PathBuf>> {
+    let dest_dir = std::path::absolute(dest_dir)?;
+    let mut created = Vec::new();
+
+    for src in clipboard_paths()? {
+        let Some(name) = src.file_name() else { continue };
+        let dest = dest_dir.join(name);
+
+        if dest.exists() {
+            return Err(FmError::AlreadyExists(dest));
+        }
+
+        if src.is_dir() {
+            if dest_dir.starts_with(&src) {
+                return Err(FmError::PasteIntoSelf(src));
+            }
+            copy_dir_all(&src, &dest)?;
+        } else {
+            fs::copy(&src, &dest)?;
+        }
+        created.push(dest);
+    }
+
+    Ok(created)
+}
+
+fn copy_dir_all(src: &Path, dest: &Path) -> io::Result<()> {
+    fs::create_dir(dest)?;
+
+    for entry in fs::read_dir(src)? {
+        let entry = entry?;
+        let target = dest.join(entry.file_name());
+
+        if entry.file_type()?.is_dir() {
+            copy_dir_all(&entry.path(), &target)?;
+        } else {
+            fs::copy(entry.path(), &target)?;
+        }
+    }
+
+    Ok(())
+}
+
+fn clipboard_paths() -> Result<Vec<PathBuf>> {
+    let Ok(fallback) = FALLBACK.lock() else {
+        return Err(FmError::Clipboard(String::from("fallback clipboard lock poisoned")));
+    };
+
+    if let Some(paths) = fallback.as_ref() {
+        return Ok(paths.clone())
+    }
+
+    let Some(clipboard) = CLIPBOARD.as_ref() else {
+        return Ok(Vec::new());
+    };
+    let Ok(clipboard) = clipboard.lock() else {
+        return Ok(Vec::new());
+    };
+
+    let files = clipboard.get_files().unwrap_or_default();
+
+    let mut paths = Vec::new();
+    for file in files {
+        // Linux returns file://home/.. while windows returns a plain path
+        let text = file.strip_prefix("file://").unwrap_or(file.as_str());
+        paths.push(PathBuf::from(text));
+    }
+
+    Ok(paths)
 }
