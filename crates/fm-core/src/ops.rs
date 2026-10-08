@@ -18,10 +18,6 @@ pub enum Recursion {
     No,
 }
 
-pub enum PasteDeleteRef {
-    Yes,
-    No,
-}
 
 
 #[derive(Debug)]
@@ -134,7 +130,7 @@ pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
 
     Ok(())
 }
-
+/// Internal function for copy_files()
 fn copy_to_system(paths: &[PathBuf]) -> bool {
     let Some(clipboard) = CLIPBOARD.as_ref() else {
         return false;
@@ -157,5 +153,3 @@ fn copy_to_system(paths: &[PathBuf]) -> bool {
 
     clipboard.set_files(path_strings).is_ok()
 }
-
-
