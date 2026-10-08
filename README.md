@@ -2,4 +2,4 @@
 A CLI/TUI file manager written in rust
 
 
-Test for linux bash
+Test for linux git username
