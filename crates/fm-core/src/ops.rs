@@ -1,3 +1,4 @@
+
 use clipboard_rs::{Clipboard, ClipboardContext};
 use crate::error::{FmError, Result};
 use std::ffi::OsStr;

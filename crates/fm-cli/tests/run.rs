@@ -1,3 +1,4 @@
+
 use fm_cli::cli_args::{Args, Commands};
 use tempfile::tempdir;
 

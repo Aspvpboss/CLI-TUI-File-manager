@@ -1,3 +1,4 @@
+
 // copy_files
 //
 // `copy_files` only records absolute paths (system clipboard, or an internal

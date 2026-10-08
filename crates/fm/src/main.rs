@@ -1,3 +1,4 @@
+
 use clap::Parser;
 use::fm_cli::cli_args::{Args, Commands};
 use std::process::ExitCode;
