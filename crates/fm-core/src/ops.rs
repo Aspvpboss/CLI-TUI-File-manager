@@ -10,6 +10,8 @@ use std::sync::{LazyLock, Mutex};
 // black magic, thread safe though
 static CLIPBOARD: LazyLock<Option<Mutex<ClipboardContext>>> =
     LazyLock::new(|| ClipboardContext::new().ok().map(Mutex::new));
+// BIG IMPORTANT ! ! ! This is were copied paths go whe the system clipboard can't take them/does not exists.
+static FALLBACK: Mutex<Vec<PathBuf>> = Mutex::new(Vec::new());
 
 pub enum Recursion {
     Yes,
@@ -94,7 +96,6 @@ pub fn rename(path: impl AsRef<Path>, new_name: impl AsRef<OsStr>) -> Result<Pat
     Ok(dest)
 }
 
-// don't even ask me how this works dog.
 pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
     let mut entries = fs::read_dir(path)?.map(|res| -> Result<Entry> {
         let de = res?;
@@ -113,61 +114,48 @@ pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
     Ok(entries)
 }
 
-
-pub fn copy_files(paths : Vec<impl AsRef<Path>>) -> Result<()> {
-
-    let mut path_strings: Vec<String> = Vec::new();
-
-    // do not question this
-    for path in paths {
-        let path_string = path.as_ref().to_str().unwrap_or("").to_string();
-        path_strings.push(path_string);
+pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
+    let mut absolute_paths: Vec<PathBuf> = Vec::new();
+    for path in &paths {
+        absolute_paths.push(std::path::absolute(path)?);
     }
 
-    
-    // do NOT question this
-    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("Failed to get clipboard ref")))?.lock() else {
-        return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
+    let on_system = copy_to_system(&absolute_paths);
+
+    let Ok(mut fallback) = FALLBACK.lock() else {
+        return Err(FmError::Clipboard(String::from("Help")))
     };
-
-
-    if path_strings.is_empty() {
-        if safe_clipboard.clear().is_err() {
-            return Err(FmError::Clipboard(String::from("Failed to clear clipboard")));
-        }
-        return Ok(());
-    }
-
-    if let Err(_) = safe_clipboard.set_files(path_strings){
-        return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
+    
+    if on_system {
+        fallback.clear();
+    } else {
+        *fallback = absolute_paths;
     }
 
     Ok(())
 }
 
-pub fn paste_files(delete_reference : PasteDeleteRef) -> Result<()> {
-
-    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("Failed to get clipboard ref")))?.lock() else {
-        return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
+fn copy_to_system(paths: &[PathBuf]) -> bool {
+    let Some(clipboard) = CLIPBOARD.as_ref() else {
+        return false;
+    };
+    let Ok(clipboard) = clipboard.lock() else {
+        return false;
     };
 
-    // An empty clipboard makes get_files() error on Windows; treat it as "nothing to paste"
-    let clipboard_files = safe_clipboard.get_files().unwrap_or_default();
-
-    for file in &clipboard_files {
-        create_file(file)?;
+    if paths.is_empty() {
+        return clipboard.clear().is_ok();
     }
 
-    match delete_reference {
-        PasteDeleteRef::Yes => {
-            for file in &clipboard_files {
-                remove_file(file)?;
-            }
-        },
-        PasteDeleteRef::No => {},
-    } 
+    let mut path_strings: Vec<String> = Vec::new();
+    for path in paths {
+        let Some(text) = path.to_str() else {
+            return false;
+        };
+        path_strings.push(text.to_string());
+    }
 
-    Ok(())
+    clipboard.set_files(path_strings).is_ok()
 }
 
 
