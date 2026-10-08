@@ -125,7 +125,7 @@ pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
     };
     
     if copy_to_system(&absolute_paths) {
-        fallback.None();
+        *fallback = None;
     } else {
         *fallback = Some(absolute_paths);
     }
