@@ -1,3 +1,4 @@
+
 use clipboard_rs::{Clipboard, ClipboardContext};
 use crate::error::{FmError, Result};
 use std::ffi::OsStr;
@@ -5,21 +6,22 @@ use std::fs::{self, OpenOptions};
 use std::io;
 use std::path::{Path, PathBuf};
 use std::fmt;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{LazyLock, Mutex};
 
 // black magic, thread safe though
 static CLIPBOARD: LazyLock<Option<Mutex<ClipboardContext>>> =
     LazyLock::new(|| ClipboardContext::new().ok().map(Mutex::new));
+// BIG IMPORTANT ! ! ! This is were copied paths go whe the system clipboard can't take them/does not exists.
+static FALLBACK: Mutex<Vec<PathBuf>> = Mutex::new(Vec::new());
+// Remember if the clipboard can't be used
+static CLIPBOARD_DISABLED: AtomicBool = AtomicBool::new(false);
 
 pub enum Recursion {
     Yes,
     No,
 }
 
-pub enum PasteDeleteRef {
-    Yes,
-    No,
-}
 
 
 #[derive(Debug)]
@@ -31,7 +33,7 @@ pub struct Entry {
 impl fmt::Display for Entry {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut name = self.name.clone();
-        if self.is_dir == true {
+        if self.is_dir {
             name += "/";
         }
         write!(f, "{} - {} bytes", name, self.size)
@@ -94,7 +96,6 @@ pub fn rename(path: impl AsRef<Path>, new_name: impl AsRef<OsStr>) -> Result<Pat
     Ok(dest)
 }
 
-// don't even ask me how this works dog.
 pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
     let mut entries = fs::read_dir(path)?.map(|res| -> Result<Entry> {
         let de = res?;
@@ -113,61 +114,55 @@ pub fn list_dir(path: impl AsRef<Path>) -> Result<Vec<Entry>> {
     Ok(entries)
 }
 
+pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
+    let mut absolute_paths: Vec<PathBuf> = Vec::new();
+    for path in &paths {
+        absolute_paths.push(std::path::absolute(path)?);
+    }
 
-pub fn copy_files(paths : Vec<impl AsRef<Path>>) -> Result<()> {
+    let Ok(mut fallback) = FALLBACK.lock() else {
+        return Err(FmError::Clipboard(String::from("fallback clipboard lock poisoned")))
+    };
+    
+    if copy_to_system(&absolute_paths) {
+        fallback.clear();
+    } else {
+        *fallback = absolute_paths;
+    }
+
+    Ok(())
+}
+/// Internal function for copy_files()
+fn copy_to_system(paths: &[PathBuf]) -> bool {
+    if CLIPBOARD_DISABLED.load(Ordering::Relaxed) {
+        return false;
+    }
+
+    let Some(clipboard) = CLIPBOARD.as_ref() else {
+        return false;
+    };
+    let Ok(clipboard) = clipboard.lock() else {
+        CLIPBOARD_DISABLED.store(true, Ordering::Relaxed);
+        return false;
+    };
 
     let mut path_strings: Vec<String> = Vec::new();
-
-    // do not question this
     for path in paths {
-        let path_string = path.as_ref().to_str().unwrap_or("").to_string();
-        path_strings.push(path_string);
+        let Some(text) = path.to_str() else {
+            return false;
+        };
+        path_strings.push(text.to_string());
     }
 
-    
-    // do NOT question this
-    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("Failed to get clipboard ref")))?.lock() else {
-        return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
+    let ok = if path_strings.is_empty() {
+        clipboard.clear().is_ok()
+    } else {
+        clipboard.set_files(path_strings).is_ok()
     };
 
-
-    if path_strings.is_empty() {
-        if safe_clipboard.clear().is_err() {
-            return Err(FmError::Clipboard(String::from("Failed to clear clipboard")));
-        }
-        return Ok(());
+    if !ok {
+        CLIPBOARD_DISABLED.store(true, Ordering::Relaxed);
     }
 
-    if let Err(_) = safe_clipboard.set_files(path_strings){
-        return Err(FmError::Clipboard(String::from("Failed to copy file to clipboard")));
-    }
-
-    Ok(())
+    ok
 }
-
-pub fn paste_files(delete_reference : PasteDeleteRef) -> Result<()> {
-
-    let Ok(safe_clipboard) = CLIPBOARD.as_ref().ok_or(FmError::Clipboard(String::from("Failed to get clipboard ref")))?.lock() else {
-        return Err(FmError::Clipboard(String::from("Failed to get clipboard ref")));
-    };
-
-    // An empty clipboard makes get_files() error on Windows; treat it as "nothing to paste"
-    let clipboard_files = safe_clipboard.get_files().unwrap_or_default();
-
-    for file in &clipboard_files {
-        create_file(file)?;
-    }
-
-    match delete_reference {
-        PasteDeleteRef::Yes => {
-            for file in &clipboard_files {
-                remove_file(file)?;
-            }
-        },
-        PasteDeleteRef::No => {},
-    } 
-
-    Ok(())
-}
-
-
