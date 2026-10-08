@@ -6,6 +6,7 @@ use std::fs::{self, OpenOptions};
 use std::io;
 use std::path::{Path, PathBuf};
 use std::fmt;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{LazyLock, Mutex};
 
 // black magic, thread safe though
@@ -13,6 +14,8 @@ static CLIPBOARD: LazyLock<Option<Mutex<ClipboardContext>>> =
     LazyLock::new(|| ClipboardContext::new().ok().map(Mutex::new));
 // BIG IMPORTANT ! ! ! This is were copied paths go whe the system clipboard can't take them/does not exists.
 static FALLBACK: Mutex<Vec<PathBuf>> = Mutex::new(Vec::new());
+// Remember if the clipboard can't be used
+static CLIPBOARD_DISABLED: AtomicBool = AtomicBool::new(false);
 
 pub enum Recursion {
     Yes,
@@ -133,16 +136,17 @@ pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
 }
 /// Internal function for copy_files()
 fn copy_to_system(paths: &[PathBuf]) -> bool {
+    if CLIPBOARD_DISABLED.load(Ordering::Relaxed) {
+        return false;
+    }
+
     let Some(clipboard) = CLIPBOARD.as_ref() else {
         return false;
     };
     let Ok(clipboard) = clipboard.lock() else {
+        CLIPBOARD_DISABLED.store(true, Ordering::Relaxed);
         return false;
     };
-
-    if paths.is_empty() {
-        return clipboard.clear().is_ok();
-    }
 
     let mut path_strings: Vec<String> = Vec::new();
     for path in paths {
@@ -152,5 +156,15 @@ fn copy_to_system(paths: &[PathBuf]) -> bool {
         path_strings.push(text.to_string());
     }
 
-    clipboard.set_files(path_strings).is_ok()
+    let ok = if path_strings.is_empty() {
+        clipboard.clear().is_ok()
+    } else {
+        clipboard.set_files(path_strings).is_ok()
+    };
+
+    if !ok {
+        CLIPBOARD_DISABLED.store(true, Ordering::Relaxed);
+    }
+
+    ok
 }
