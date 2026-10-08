@@ -1,6 +1,4 @@
 
-// Claude is responsible for most tests in this file
-
 mod common;
 
 use common::io_kind;

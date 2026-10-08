@@ -33,7 +33,7 @@ pub struct Entry {
 impl fmt::Display for Entry {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut name = self.name.clone();
-        if self.is_dir == true {
+        if self.is_dir {
             name += "/";
         }
         write!(f, "{} - {} bytes", name, self.size)
@@ -120,13 +120,11 @@ pub fn copy_files(paths: Vec<impl AsRef<Path>>) -> Result<()> {
         absolute_paths.push(std::path::absolute(path)?);
     }
 
-    let on_system = copy_to_system(&absolute_paths);
-
     let Ok(mut fallback) = FALLBACK.lock() else {
-        return Err(FmError::Clipboard(String::from("Help")))
+        return Err(FmError::Clipboard(String::from("fallback clipboard lock poisoned")))
     };
     
-    if on_system {
+    if copy_to_system(&absolute_paths) {
         fallback.clear();
     } else {
         *fallback = absolute_paths;
