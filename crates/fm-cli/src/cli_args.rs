@@ -29,7 +29,7 @@ pub enum Commands {
         file_path: String,
     },
     /// Creates a new directory
-    Newf {
+    Newd {
         dir_path: String,
     },
     /// Deletes a file
@@ -37,7 +37,7 @@ pub enum Commands {
         file_path: String,
     },
     /// Deletes a directory, if the directory is not empty then it will fail unless the -r/--recursion flag is used
-    Delf {
+    Deld {
         dir_path: String,
         #[arg(short,long)]
         recursion: bool,

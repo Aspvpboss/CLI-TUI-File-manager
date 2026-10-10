@@ -10,13 +10,13 @@ pub fn run(args: Args) -> Result<()> {
         Commands::New { file_path } => {
             fm_core::create_file(file_path)?;
         }
-        Commands::Newf { dir_path } => {
+        Commands::Newd { dir_path } => {
             fm_core::create_dir(dir_path)?;
         }
         Commands::Del { file_path } => {
             fm_core::remove_file(file_path)?;
         }
-        Commands::Delf { dir_path, recursion } => {
+        Commands::Deld { dir_path, recursion } => {
             let recursion = if recursion {
                 Recursion::Yes
             } else {
