@@ -51,6 +51,14 @@ pub enum Commands {
     List {
         dir_path: String,
     },
+    /// Copies absolute path of a file/directory
+    Copy {
+        dir_path: String,
+    },
+    /// Pastes copied items
+    Paste {
+        dir_path: String,
+    },
     Tui,
 }
 

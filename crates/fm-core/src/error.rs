@@ -15,7 +15,7 @@ impl fmt::Display for FmError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             FmError::Io(e)  => write!(f, "I/O error: {e}"),
-            FmError::AlreadyExists(p) => write!(f, "alredy exists: {}", p.display()),
+            FmError::AlreadyExists(p) => write!(f, "already exists: {}", p.display()),
             FmError::InvalidName(n) => write!(f, "invalid name: {n:?}"),
             FmError::Cli(n) => write!(f, "CLI error: {n}"),
             FmError::Clipboard(n) => write!(f, "clipboard error: {n}"),

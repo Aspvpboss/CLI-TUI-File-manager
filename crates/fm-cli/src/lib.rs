@@ -1,5 +1,8 @@
 
 pub mod cli_args;
+use std::iter::Copied;
+
+use clap::{Command, ValueHint::DirPath};
 use cli_args::{Args, Commands};
 use fm_core::*;
 
@@ -32,6 +35,12 @@ pub fn run(args: Args) -> Result<()> {
             for entry in dir_list {
                 println!("{}", entry);
             }
+        }
+        Commands::Copy { dir_path } => {
+            fm_core::copy_files(vec![dir_path])?;
+        }
+        Commands::Paste { dir_path } => {
+            fm_core::paste_files(dir_path)?;
         }
         _ => {
             return Err(FmError::Cli("Invalid command".to_string()));
