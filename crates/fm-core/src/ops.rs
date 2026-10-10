@@ -32,18 +32,21 @@ pub struct Entry {
 }
 impl fmt::Display for Entry {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut name = self.name.clone();
-        if self.is_dir {
-            name += "/";
-        }
+        let name = self.convert_to_string();
         write!(f, "{} - {} bytes", name, self.size)
     }
 }
 
+
 impl Entry {
-
+    pub fn convert_to_string(&self) -> String {
+        let mut name = self.name.clone();
+        if self.is_dir {
+            name += "/";
+        }
+        return name
+    }
 }
-
 
 
 pub fn create_file(path: impl AsRef<Path>) -> Result<()> {
