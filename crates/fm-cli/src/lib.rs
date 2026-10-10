@@ -1,8 +1,6 @@
 
 pub mod cli_args;
-use std::iter::Copied;
 
-use clap::{Command, ValueHint::DirPath};
 use cli_args::{Args, Commands};
 use fm_core::*;
 
