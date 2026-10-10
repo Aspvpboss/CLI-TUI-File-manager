@@ -40,6 +40,9 @@ impl fmt::Display for Entry {
     }
 }
 
+impl Entry {
+
+}
 
 
 
