@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+crossterm = "0.29.0"
 fm-core = { workspace = true }
 ratatui = { workspace = true }
 
