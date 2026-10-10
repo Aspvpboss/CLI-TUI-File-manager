@@ -53,7 +53,7 @@ pub enum Commands {
     },
     /// Copies absolute path of a file/directory
     Copy {
-        dir_path: String,
+        path: String, // I made this path instead of dir_path, because copy takes a file or a directory, so not always a "directory path" 
     },
     /// Pastes copied items
     Paste {

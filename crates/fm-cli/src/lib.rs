@@ -34,8 +34,8 @@ pub fn run(args: Args) -> Result<()> {
                 println!("{}", entry);
             }
         }
-        Commands::Copy { dir_path } => {
-            fm_core::copy_files(vec![dir_path])?;
+        Commands::Copy { path } => {
+            fm_core::copy_files(vec![path])?;
         }
         Commands::Paste { dir_path } => {
             fm_core::paste_files(dir_path)?;
