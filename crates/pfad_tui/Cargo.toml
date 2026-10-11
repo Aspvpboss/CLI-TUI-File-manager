@@ -1,0 +1,12 @@
+[package]
+name = "pfad_tui"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+crossterm = "0.29.0"
+pfad_core = { workspace = true }
+ratatui = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

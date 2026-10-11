@@ -1,10 +1,10 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/fm-core",
-    "crates/fm-cli",
-    "crates/fm-tui",
-    "crates/fm",
+    "crates/pfad_core",
+    "crates/pfad_cli",
+    "crates/pfad_tui",
+    "crates/pfad",
 ]
 
 [workspace.package]
@@ -15,6 +15,6 @@ edition = "2024"
 clap = { version = "4.6.7", features = ["derive"] }
 ratatui = "0.30.2"
 tempfile = "3.27.0"
-fm-core = { path = "crates/fm-core" }
-fm-cli = { path = "crates/fm-cli" }
-fm-tui = { path = "crates/fm-tui" }
+pfad_core = { path = "crates/pfad_core" }
+pfad_cli = { path = "crates/pfad_cli" }
+pfad_tui = { path = "crates/pfad_tui" }

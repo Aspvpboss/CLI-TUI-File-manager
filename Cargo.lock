@@ -571,43 +571,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fm"
-version = "0.1.0"
-dependencies = [
- "clap",
- "fm-cli",
- "fm-tui",
- "tempfile",
-]
-
-[[package]]
-name = "fm-cli"
-version = "0.1.0"
-dependencies = [
- "clap",
- "fm-core",
- "tempfile",
-]
-
-[[package]]
-name = "fm-core"
-version = "0.1.0"
-dependencies = [
- "clipboard-rs",
- "tempfile",
-]
-
-[[package]]
-name = "fm-tui"
-version = "0.1.0"
-dependencies = [
- "crossterm",
- "fm-core",
- "ratatui",
- "tempfile",
-]
-
-[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1347,6 +1310,43 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed93ba1a9ffcca32130a5188701c81c0c49cf00d4b7c5007d5148951d743adcb"
 dependencies = [
  "pest",
+]
+
+[[package]]
+name = "pfad"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "pfad_cli",
+ "pfad_tui",
+ "tempfile",
+]
+
+[[package]]
+name = "pfad_cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "pfad_core",
+ "tempfile",
+]
+
+[[package]]
+name = "pfad_core"
+version = "0.1.0"
+dependencies = [
+ "clipboard-rs",
+ "tempfile",
+]
+
+[[package]]
+name = "pfad_tui"
+version = "0.1.0"
+dependencies = [
+ "crossterm",
+ "pfad_core",
+ "ratatui",
+ "tempfile",
 ]
 
 [[package]]

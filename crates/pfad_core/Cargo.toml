@@ -1,0 +1,10 @@
+[package]
+name = "pfad_core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clipboard-rs = "0.3.5"
+
+[dev-dependencies]
+tempfile = { workspace = true }
